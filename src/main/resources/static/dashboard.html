@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusEstate | Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar-active { background: linear-gradient(to right, rgba(16, 185, 129, 0.1), transparent); border-left: 4px solid #10b981; color: #10b981; }
+        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-300 font-sans overflow-hidden">
+
+<div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-80 bg-slate-900 border-r border-slate-800 flex flex-col hidden lg:flex">
+        <div class="p-10 flex items-center gap-4 border-b border-slate-800">
+            <div class="p-2 bg-emerald-600 rounded-xl text-white shadow-lg shadow-emerald-600/30"><i class="fa-solid fa-house-chimney text-xl"></i></div>
+            <span class="text-xl font-bold tracking-widest text-white uppercase">Nexus<span class="text-emerald-500">Estate</span></span>
+        </div>
+        <nav class="flex-1 p-6 space-y-2 overflow-y-auto">
+            <button onclick="nav('overview')" class="nav-btn w-full flex items-center gap-5 px-5 py-4 rounded-2xl sidebar-active"><i class="fa-solid fa-chart-line"></i> Market Overview</button>
+            <button onclick="nav('properties')" class="nav-btn w-full flex items-center gap-5 px-5 py-4 rounded-2xl text-slate-400 hover:bg-slate-800"><i class="fa-solid fa-city"></i> Properties</button>
+            <button onclick="nav('appoinments')" class="nav-btn w-full flex items-center gap-5 px-5 py-4 rounded-2xl text-slate-400 hover:bg-slate-800"><i class="fa-solid fa-calendar-check"></i> Appoinments</button>
+            <button onclick="nav('inquiries')" class="nav-btn w-full flex items-center gap-5 px-5 py-4 rounded-2xl text-slate-400 hover:bg-slate-800"><i class="fa-solid fa-comment-dots"></i> Inquiries</button>
+            <button onclick="nav('ai-chat')" class="nav-btn w-full flex items-center gap-5 px-5 py-4 rounded-2xl text-slate-400 hover:bg-slate-800"><i class="fa-solid fa-robot"></i> AI Intelligence</button>
+        </nav>
+        <div class="p-8 border-t border-slate-800">
+            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-red-900/20 hover:text-red-500 py-4 rounded-2xl transition-all font-bold"><i class="fa-solid fa-power-off"></i> Logout</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col">
+        <header class="h-24 bg-slate-950/50 border-b border-slate-800 flex items-center justify-between px-10">
+            <h2 id="view-title" class="text-xl font-bold text-white uppercase tracking-widest text-sm">Dashboard Overview</h2>
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <p class="text-sm font-bold text-white" id="user-display">User</p>
+                    <p class="text-[10px] text-emerald-500 font-bold uppercase" id="role-display">Verified</p>
+                </div>
+                <img src="https://ui-avatars.com/api/?background=10b981&color=fff&name=User" class="w-12 h-12 rounded-2xl border border-slate-700">
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-10" id="viewport">
+            <!-- Default Content -->
+            <div id="overview-section" class="content-section">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="glass-panel p-8 rounded-[2rem]">
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Active Listings</p>
+                        <h3 class="text-5xl font-black text-white mt-4">124</h3>
+                    </div>
+                    <div class="glass-panel p-8 rounded-[2rem]">
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Pending Appoinments</p>
+                        <h3 class="text-5xl font-black text-emerald-500 mt-4">12</h3>
+                    </div>
+                    <div class="glass-panel p-8 rounded-[2rem]">
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Sales Revenue</p>
+                        <h3 class="text-5xl font-black text-white mt-4">LKR 4M</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Chat View -->
+            <div id="ai-chat-section" class="hidden h-full max-w-4xl mx-auto flex flex-col">
+                <div class="flex-1 overflow-y-auto space-y-6 p-8 glass-panel rounded-3xl" id="chat-win">
+                    <div class="bg-slate-800 p-5 rounded-3xl rounded-tl-none max-w-[80%] text-sm leading-relaxed">
+                        Greetings. I am the Nexus Intelligence Assistant. How can I assist your property portfolio today?
+                    </div>
+                </div>
+                <div class="mt-6 flex gap-4 bg-slate-900 p-4 rounded-3xl border border-slate-800">
+                    <input type="text" id="ai-in" placeholder="Ask about property trends..." class="flex-1 bg-transparent px-4 outline-none text-sm">
+                    <button onclick="askAI()" class="bg-emerald-600 w-12 h-12 rounded-2xl text-white flex items-center justify-center"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('username');
+    const role = localStorage.getItem('role');
+
+    if(!token) window.location.href = 'login.html';
+    document.getElementById('user-display').innerText = user || "Nexus User";
+    document.getElementById('role-display').innerText = role || "Verified Account";
+
+    function nav(view) {
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('sidebar-active'));
+        event.currentTarget.classList.add('sidebar-active');
+        document.getElementById('overview-section').classList.toggle('hidden', view !== 'overview');
+        document.getElementById('ai-chat-section').classList.toggle('hidden', view !== 'ai-chat');
+        document.getElementById('view-title').innerText = view.replace('-', ' ');
+    }
+
+    function askAI() {
+        const input = document.getElementById('ai-in');
+        const win = document.getElementById('chat-win');
+        if(!input.value) return;
+        win.innerHTML += `<div class="flex justify-end"><div class="bg-emerald-600 p-5 rounded-3xl rounded-tr-none max-w-[80%] text-sm text-white">${input.value}</div></div>`;
+        input.value = '';
+        win.scrollTop = win.scrollHeight;
+    }
+
+    function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+</script>
+</body>
+</html>
