@@ -15,4 +15,5 @@ public class AppoinmentDTO {
     private AppoinmentStatus status;
     private Long propertyId;
     private Long userId;
+
 }

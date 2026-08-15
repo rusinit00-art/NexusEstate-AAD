@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AppoinmentRepository extends JpaRepository<Appoinment, Long> {
+
 }

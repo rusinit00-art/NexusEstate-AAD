@@ -29,4 +29,5 @@ public class AppoinmentController {
     public ResponseEntity<String> updateStatus(@PathVariable Long id, @RequestParam String status) {
         return ResponseEntity.ok(appoinmentService.updateStatus(id, status));
     }
+
 }

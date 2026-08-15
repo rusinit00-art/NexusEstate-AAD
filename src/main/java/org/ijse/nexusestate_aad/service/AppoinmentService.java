@@ -7,4 +7,5 @@ public interface AppoinmentService {
     String saveAppoinment(AppoinmentDTO dto);
     List<AppoinmentDTO> getAllAppoinments();
     String updateStatus(Long id, String status);
+
 }
