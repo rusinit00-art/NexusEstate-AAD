@@ -1,4 +1,5 @@
 package org.ijse.nexusestate_aad.service;
+
 import org.ijse.nexusestate_aad.dto.PropertyDTO;
 import java.util.List;
 

@@ -7,6 +7,7 @@ import org.ijse.nexusestate_aad.exception.ResourceNotFoundException;
 import org.ijse.nexusestate_aad.repository.*;
 import org.ijse.nexusestate_aad.service.PropertyService;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,7 +38,7 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Override
     public String deleteProperty(Long id) {
-        if(!propertyRepository.existsById(id)) throw new ResourceNotFoundException("Property not found");
+        if (!propertyRepository.existsById(id)) throw new ResourceNotFoundException("Property not found");
         propertyRepository.deleteById(id);
         return "Property deleted successfully!";
     }

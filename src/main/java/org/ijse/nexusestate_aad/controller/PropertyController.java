@@ -5,6 +5,7 @@ import org.ijse.nexusestate_aad.dto.PropertyDTO;
 import org.ijse.nexusestate_aad.service.PropertyService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -32,10 +33,5 @@ public class PropertyController {
     @GetMapping("/all")
     public ResponseEntity<List<PropertyDTO>> getAll() {
         return ResponseEntity.ok(propertyService.getAllProperties());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<PropertyDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(propertyService.getPropertyById(id));
     }
 }
