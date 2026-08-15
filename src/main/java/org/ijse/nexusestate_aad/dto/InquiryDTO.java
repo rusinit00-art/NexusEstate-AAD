@@ -13,5 +13,5 @@ public class InquiryDTO {
     private String message;
     private LocalDateTime date;
     private Long propertyId;
-
+    private Long userId;
 }
