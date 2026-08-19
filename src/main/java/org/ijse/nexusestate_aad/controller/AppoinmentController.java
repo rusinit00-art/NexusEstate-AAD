@@ -25,9 +25,8 @@ public class AppoinmentController {
         return ResponseEntity.ok(appoinmentService.getAllAppoinments());
     }
 
-    @PatchMapping("/status/{id}")
-    public ResponseEntity<String> updateStatus(@PathVariable Long id, @RequestParam String status) {
+    @PutMapping("/status/{id}/{status}")
+    public ResponseEntity<String> updateStatus(@PathVariable Long id, @PathVariable String status) {
         return ResponseEntity.ok(appoinmentService.updateStatus(id, status));
     }
-
 }

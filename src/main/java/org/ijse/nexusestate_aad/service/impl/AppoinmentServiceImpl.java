@@ -37,15 +37,19 @@ public class AppoinmentServiceImpl implements AppoinmentService {
     @Override
     public List<AppoinmentDTO> getAllAppoinments() {
         return appoinmentRepository.findAll().stream().map(a -> new AppoinmentDTO(
-                a.getId(), a.getAppoinmentDate(), a.getStatus(),
-                a.getProperty().getId(), a.getUser().getId()
+                a.getId(),
+                a.getAppoinmentDate(),
+                a.getStatus(),
+                a.getProperty() != null ? a.getProperty().getId() : null,
+                a.getUser() != null ? a.getUser().getId() : null
         )).collect(Collectors.toList());
     }
 
     @Override
     public String updateStatus(Long id, String status) {
-        Appoinment a = appoinmentRepository.findById(id).orElseThrow(() -> new RuntimeException("Not found"));
-        a.setStatus(AppoinmentStatus.valueOf(status));
+        Appoinment a = appoinmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Appoinment not found"));
+        a.setStatus(AppoinmentStatus.valueOf(status.toUpperCase()));
         appoinmentRepository.save(a);
         return "Status updated to " + status;
     }
