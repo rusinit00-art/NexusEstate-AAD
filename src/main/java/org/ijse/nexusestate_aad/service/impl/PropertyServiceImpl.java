@@ -7,7 +7,6 @@ import org.ijse.nexusestate_aad.exception.ResourceNotFoundException;
 import org.ijse.nexusestate_aad.repository.*;
 import org.ijse.nexusestate_aad.service.PropertyService;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.stream.Collectors;
 

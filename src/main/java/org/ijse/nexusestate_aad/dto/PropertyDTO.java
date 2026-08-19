@@ -13,11 +13,11 @@ public class PropertyDTO {
     private String title;
     private String description;
     private Double price;
-    private String imageUrl;
-    private String docName;
     private Double areaSqft;
     private PropertyStatus status;
     private Long categoryId;
     private Long locationId;
     private Long sellerId;
+    private String imageUrl;
+    private String docName;
 }
