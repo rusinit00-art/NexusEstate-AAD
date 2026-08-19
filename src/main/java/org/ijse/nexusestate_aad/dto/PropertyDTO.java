@@ -15,9 +15,7 @@ public class PropertyDTO {
     private Double price;
     private Double areaSqft;
     private PropertyStatus status;
-    private Long categoryId;
-    private Long locationId;
+    private String categoryName; // ID වෙනුවට නම
+    private String cityName;     // ID වෙනුවට නම
     private Long sellerId;
-    private String imageUrl;
-    private String docName;
 }

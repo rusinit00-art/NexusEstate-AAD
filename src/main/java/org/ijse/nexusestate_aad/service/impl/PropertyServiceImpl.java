@@ -2,11 +2,14 @@ package org.ijse.nexusestate_aad.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.ijse.nexusestate_aad.dto.PropertyDTO;
+import org.ijse.nexusestate_aad.entity.PropertyFoundation.Location;
 import org.ijse.nexusestate_aad.entity.PropertyFoundation.Property;
+import org.ijse.nexusestate_aad.entity.PropertyFoundation.PropertyCategory;
 import org.ijse.nexusestate_aad.exception.ResourceNotFoundException;
 import org.ijse.nexusestate_aad.repository.*;
 import org.ijse.nexusestate_aad.service.PropertyService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,6 +23,7 @@ public class PropertyServiceImpl implements PropertyService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public String saveProperty(PropertyDTO dto) {
         Property property = mapToEntity(dto, new Property());
         propertyRepository.save(property);
@@ -27,6 +31,7 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
+    @Transactional
     public String updateProperty(Long id, PropertyDTO dto) {
         Property existing = propertyRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found"));
@@ -59,8 +64,17 @@ public class PropertyServiceImpl implements PropertyService {
         entity.setPrice(dto.getPrice());
         entity.setAreaSqft(dto.getAreaSqft());
         entity.setStatus(dto.getStatus());
-        entity.setCategory(categoryRepository.findById(dto.getCategoryId()).orElse(null));
-        entity.setLocation(locationRepository.findById(dto.getLocationId()).orElse(null));
+
+        // Category සොයා ගැනීම හෝ අලුතින් සෑදීම
+        PropertyCategory category = categoryRepository.findByName(dto.getCategoryName())
+                .orElseGet(() -> categoryRepository.save(new PropertyCategory(null, dto.getCategoryName())));
+        entity.setCategory(category);
+
+        // Location සොයා ගැනීම හෝ අලුතින් සෑදීම
+        Location location = locationRepository.findByCity(dto.getCityName())
+                .orElseGet(() -> locationRepository.save(new Location(null, dto.getCityName(), "Default District")));
+        entity.setLocation(location);
+
         entity.setSeller(userRepository.findById(dto.getSellerId()).orElse(null));
         return entity;
     }
@@ -68,8 +82,8 @@ public class PropertyServiceImpl implements PropertyService {
     private PropertyDTO mapToDTO(Property p) {
         return new PropertyDTO(p.getId(), p.getTitle(), p.getDescription(), p.getPrice(),
                 p.getAreaSqft(), p.getStatus(),
-                p.getCategory() != null ? p.getCategory().getId() : null,
-                p.getLocation() != null ? p.getLocation().getId() : null,
+                p.getCategory() != null ? p.getCategory().getName() : null,
+                p.getLocation() != null ? p.getLocation().getCity() : null,
                 p.getSeller() != null ? p.getSeller().getId() : null);
     }
 }
