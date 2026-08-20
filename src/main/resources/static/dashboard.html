@@ -12,6 +12,7 @@
         .sidebar-active { background: linear-gradient(to right, rgba(16, 185, 129, 0.15), transparent); border-left: 4px solid #10b981; color: #10b981; }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        .prop-card-img { height: 200px; width: 100%; object-fit: cover; border-radius: 1.5rem; }
     </style>
 </head>
 <body class="bg-nexus text-slate-300 font-sans overflow-hidden">
@@ -23,7 +24,7 @@
                 <i class="fa-solid fa-house-chimney-window text-xl"></i>
             </div>
             <div>
-                <h1 class="text-xl font-bold text-white tracking-tighter uppercase">Nexus<span class="text-emerald-500">Estate</span></h1>
+                <h1 class="text-xl font-bold text-white tracking-tighter uppercase italic">NexusEstate</h1>
                 <p class="text-[9px] font-bold text-slate-500 tracking-[0.2em] uppercase">Enterprise Suite</p>
             </div>
         </div>
@@ -35,11 +36,17 @@
             <button onclick="nav('properties')" class="nav-btn w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all text-slate-500 hover:bg-slate-900">
                 <i class="fa-solid fa-city text-lg"></i> <span class="font-medium">Properties</span>
             </button>
+            <button id="wishlist-btn" onclick="nav('wishlist')" class="nav-btn w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all text-slate-500 hover:bg-slate-900">
+                <i class="fa-solid fa-heart text-lg text-red-500"></i> <span class="font-medium">Wishlist Nodes</span>
+            </button>
             <button onclick="nav('appoinments')" class="nav-btn w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all text-slate-500 hover:bg-slate-900">
                 <i class="fa-solid fa-calendar-check text-lg"></i> <span class="font-medium">Appoinments</span>
             </button>
             <button onclick="nav('inquiries')" class="nav-btn w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all text-slate-500 hover:bg-slate-900">
                 <i class="fa-solid fa-comment-dots text-lg"></i> <span class="font-medium">Inquiries</span>
+            </button>
+            <button onclick="nav('notifications')" class="nav-btn w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all text-slate-500 hover:bg-slate-900">
+                <i class="fa-solid fa-bell text-lg text-amber-500"></i> <span class="font-medium">Notifications</span>
             </button>
 
             <div id="admin-tools" class="hidden">
@@ -59,9 +66,7 @@
         </nav>
 
         <div class="p-8 border-t border-slate-900">
-            <button onclick="logout()" class="w-full flex items-center justify-center gap-3 bg-slate-900 hover:bg-red-900/20 hover:text-red-500 py-4 rounded-2xl transition-all font-bold text-sm">
-                <i class="fa-solid fa-power-off"></i> Sign Out
-            </button>
+            <button onclick="logout()" class="w-full bg-slate-900 hover:bg-red-900/20 hover:text-red-500 py-4 rounded-2xl font-bold text-sm">Sign Out</button>
         </div>
     </aside>
 
@@ -80,13 +85,11 @@
             </div>
         </header>
 
-        <div id="main-viewport" class="flex-1 overflow-y-auto p-10">
-
+        <div id="main-viewport" class="flex-1 overflow-y-auto p-10 space-y-10">
             <div id="overview-section" class="content-view space-y-10">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="glass-panel p-8 rounded-[2.5rem]"><p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Available Assets</p><h3 class="text-5xl font-black text-white mt-4" id="stat-p">0</h3></div>
-                    <div class="glass-panel p-8 rounded-[2.5rem]"><p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Active Bookings</p><h3 class="text-5xl font-black text-white mt-4" id="stat-a">0</h3></div>
-                    <div class="glass-panel p-8 rounded-[2.5rem] border-emerald-500/20"><p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Market Cap</p><h3 class="text-4xl font-black text-emerald-500 mt-4">LKR 4.2B</h3></div>
+                    <div class="glass-panel p-8 rounded-[2.5rem] shadow-xl"><p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Properties</p><h3 class="text-5xl font-black text-white mt-4" id="stat-p">0</h3></div>
+                    <div class="glass-panel p-8 rounded-[2.5rem] shadow-xl"><p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Bookings</p><h3 class="text-5xl font-black text-white mt-4" id="stat-a">0</h3></div>
                 </div>
             </div>
 
@@ -100,12 +103,17 @@
                 <div id="prop-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
 
-            <div id="appoinments-section" class="content-view hidden space-y-8">
+            <div id="wishlist-section" class="content-view hidden space-y-8">
+                <h3 class="text-2xl font-bold text-white italic">Saved Asset Nodes</h3>
+                <div id="wishlist-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+
+            <div id="appoinments-section" class="content-view hidden space-y-8 text-center">
                 <h3 class="text-2xl font-bold text-white italic text-center">Scheduled Viewings</h3>
-                <div class="glass-panel rounded-3xl overflow-hidden">
+                <div class="glass-panel rounded-3xl overflow-hidden shadow-2xl">
                     <table class="w-full text-left text-sm">
                         <thead class="bg-slate-900/50 border-b border-slate-800 text-emerald-500 uppercase text-[10px] font-bold">
-                        <tr><th class="p-5">Node ID</th><th class="p-5">Time Sync</th><th class="p-5">Status</th></tr>
+                        <tr><th class="p-5">Node ID</th><th class="p-5">Time Sync</th><th class="p-5">Asset</th><th class="p-5">Status</th></tr>
                         </thead>
                         <tbody id="appoinment-table-body"></tbody>
                     </table>
@@ -117,11 +125,16 @@
                 <div id="inquiry-list" class="max-w-3xl mx-auto space-y-4"></div>
             </div>
 
-            <div id="users-section" class="content-view hidden space-y-8">
-                <h3 class="text-2xl font-bold text-white italic">Network Identity Nodes</h3>
-                <div class="glass-panel rounded-3xl overflow-hidden">
+            <div id="notifications-section" class="content-view hidden space-y-8">
+                <h3 class="text-2xl font-bold text-white italic text-center">System Alerts</h3>
+                <div id="notification-list" class="max-w-2xl mx-auto space-y-4"></div>
+            </div>
+
+            <div id="users-section" class="content-view hidden space-y-8 text-center">
+                <h3 class="text-2xl font-bold text-white italic text-center uppercase tracking-widest text-sm">Network Identity Nodes</h3>
+                <div class="glass-panel rounded-3xl overflow-hidden shadow-2xl">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-900/50 border-b border-slate-800 text-[10px] font-bold uppercase">
+                        <thead class="bg-slate-900 border-b border-slate-800 text-[10px] font-bold uppercase">
                         <tr><th class="p-5">ID</th><th class="p-5">Identifier</th><th class="p-5">Communication</th><th class="p-5">Actions</th></tr>
                         </thead>
                         <tbody id="user-table-body"></tbody>
@@ -131,25 +144,20 @@
 
             <div id="profile-section" class="content-view hidden max-w-2xl mx-auto space-y-8">
                 <div class="glass-panel p-10 rounded-[3rem] border-emerald-500/20 shadow-2xl">
-                    <h3 class="text-2xl font-bold text-white italic border-b border-slate-800 pb-5 mb-8 text-center">Identity Control</h3>
+                    <h3 class="text-2xl font-bold text-white italic border-b border-slate-800 pb-5 mb-8 text-center uppercase tracking-tighter">Identity Control</h3>
                     <form onsubmit="handleUpdateUser(event)" class="space-y-6">
-                        <input type="text" id="up-un" placeholder="New Username" required class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-white outline-none focus:border-emerald-500 transition-all">
-                        <input type="email" id="up-em" placeholder="New Email" required class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-white outline-none focus:border-emerald-500 transition-all">
-                        <div class="flex gap-4 pt-6">
-                            <button type="submit" class="flex-1 bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl font-bold text-white">Update Sync</button>
-                            <button type="button" onclick="handleDeleteUser(1)" class="px-8 bg-red-900/10 text-red-500 border border-red-900/30 hover:bg-red-600 hover:text-white py-4 rounded-2xl font-bold transition-all">Destroy Node</button>
-                        </div>
+                        <input type="text" id="up-un" placeholder="Username" required class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-white outline-none focus:border-emerald-500">
+                        <input type="email" id="up-em" placeholder="Channel Email" required class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-white outline-none focus:border-emerald-500">
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl font-bold text-white uppercase text-[10px] tracking-widest transition-all">Update Node</button>
+                        <button type="button" onclick="handleDeleteUser(USER_ID)" class="w-full text-red-500 text-[10px] font-bold uppercase mt-4 hover:underline">Destroy Node</button>
                     </form>
                 </div>
             </div>
 
             <div id="ai-chat-section" class="content-view hidden max-w-4xl mx-auto h-[600px] flex flex-col glass-panel rounded-[3rem] overflow-hidden border-emerald-500/10 shadow-2xl">
-                <div class="p-6 border-b border-slate-900 bg-slate-950/50 flex items-center gap-3"><div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-emerald-500/50"></div><span class="font-bold text-white tracking-widest text-xs uppercase">Nexus AI Assistant</span></div>
-                <div id="chat-box" class="flex-1 p-10 overflow-y-auto space-y-6 text-sm"></div>
-                <div class="p-8 bg-slate-950/50 flex gap-4">
-                    <input type="text" id="ai-in" placeholder="Ask Nexus..." class="flex-1 bg-slate-900 border border-slate-800 rounded-2xl px-6 outline-none text-sm text-white">
-                    <button onclick="handleAIChat()" class="w-14 h-14 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full flex items-center justify-center shadow-lg transition-all active:scale-90"><i class="fa-solid fa-paper-plane"></i></button>
-                </div>
+                <div class="p-6 border-b border-slate-900 bg-slate-950/50 flex items-center gap-3"><div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-emerald-500/50"></div><span class="font-bold text-white tracking-widest text-xs uppercase text-emerald-500 italic">Nexus AI Assistant</span></div>
+                <div id="chat-box" class="flex-1 p-10 overflow-y-auto space-y-6 text-sm leading-relaxed"></div>
+                <div class="p-8 bg-slate-950/50 flex gap-4"><input type="text" id="ai-in" placeholder="Ask Nexus..." class="flex-1 bg-slate-900 border border-slate-800 rounded-2xl px-6 outline-none text-sm text-white"><button onclick="handleAIChat()" class="w-14 h-14 bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-lg transition-all active:scale-90"><i class="fa-solid fa-paper-plane"></i></button></div>
             </div>
         </div>
     </main>
@@ -161,14 +169,14 @@
         <form onsubmit="handleSaveProperty(event)" class="space-y-8">
             <div class="grid grid-cols-2 gap-8">
                 <input type="text" id="p-title" placeholder="Market Title" required class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-white outline-none focus:border-emerald-500">
-                <input type="number" id="p-price" placeholder="Asking Price (LKR)" required class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-white outline-none focus:border-emerald-500">
+                <input type="number" id="p-price" placeholder="Price (LKR)" required class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-white outline-none focus:border-emerald-500">
             </div>
             <div class="grid grid-cols-2 gap-8">
-                <input type="text" id="p-cat" placeholder="Property Type (e.g. Villa)" required class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-white outline-none">
-                <input type="text" id="p-loc" placeholder="City (e.g. Colombo)" required class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-white outline-none">
+                <input type="text" id="p-cat" placeholder="Property Type" required class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-white outline-none">
+                <input type="text" id="p-loc" placeholder="City" required class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-white outline-none">
             </div>
-            <div class="grid grid-cols-2 gap-8 border-t border-slate-800 pt-6">
-                <input type="text" id="p-img" placeholder="Visual Filename (e.g. house1.jpg)" class="bg-slate-950 border border-slate-800 rounded-2xl p-4 text-xs italic text-white outline-none">
+            <div class="grid grid-cols-2 gap-8">
+                <input type="text" id="p-img" placeholder="Visual URL (e.g. house1.jpg)" class="bg-slate-950 border border-slate-800 rounded-2xl p-4 text-xs italic text-white outline-none">
                 <input type="text" id="p-doc" placeholder="Deed Identifier" class="bg-slate-950 border border-slate-800 rounded-2xl p-4 text-xs italic text-white outline-none">
             </div>
             <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 py-5 rounded-3xl font-black uppercase text-xs text-white shadow-2xl transition-all">Publish Node</button>
@@ -179,7 +187,7 @@
 
 <div id="apModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50 p-4">
     <div class="glass-panel w-full max-w-md rounded-[3rem] p-10 border-emerald-500/20 shadow-2xl">
-        <h3 class="text-2xl font-bold text-white mb-6 border-b border-slate-800 pb-4 italic text-center">Confirm Viewing</h3>
+        <h3 class="text-xl font-bold text-white mb-6 border-b border-slate-800 pb-4 italic text-center">Confirm Viewing</h3>
         <form onsubmit="handleSaveAppoinment(event)" class="space-y-6">
             <input type="hidden" id="ap-prop-id">
             <input type="datetime-local" id="ap-date" required class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-white outline-none focus:border-emerald-500">
@@ -191,12 +199,12 @@
 
 <div id="inqModal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50 p-4">
     <div class="glass-panel w-full max-w-md rounded-[3rem] p-10 border-blue-500/20 shadow-2xl">
-        <h3 class="text-2xl font-bold text-white mb-6 border-b border-slate-800 pb-4 italic text-center">Stream Query</h3>
+        <h3 class="text-xl font-bold text-white mb-6 border-b border-slate-800 pb-4 italic text-center text-xs uppercase tracking-widest">Stream Inquiry</h3>
         <form onsubmit="handleSaveInquiry(event)" class="space-y-6">
             <input type="hidden" id="inq-prop-id">
-            <textarea id="inq-msg" placeholder="Message to owner..." required class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-white h-32 outline-none focus:border-emerald-500"></textarea>
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-2xl font-bold text-white shadow-lg">Send Stream</button>
-            <button type="button" onclick="toggleModal('inqModal', false)" class="w-full text-slate-500 text-[10px] font-bold uppercase mt-4 text-center">Close</button>
+            <textarea id="inq-msg" placeholder="Your query..." required class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 text-white h-32 outline-none focus:border-emerald-500"></textarea>
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-2xl font-bold text-white shadow-lg">Send Inquiry</button>
+            <button type="button" onclick="toggleModal('inqModal', false)" class="w-full text-slate-500 text-[10px] font-bold uppercase mt-2 text-center">Close</button>
         </form>
     </div>
 </div>
@@ -205,19 +213,17 @@
     const TOKEN = localStorage.getItem('token');
     const USER = localStorage.getItem('username');
     const ROLE = localStorage.getItem('role');
+    const USER_ID = localStorage.getItem('userId');
 
-    if(!TOKEN) window.location.href = 'http://localhost:8080/login.html';
+    if(!TOKEN) window.location.href = 'login.html';
 
     document.addEventListener("DOMContentLoaded", () => {
         document.getElementById('usr-display').innerText = USER || "Operator";
         document.getElementById('role-display').innerText = (ROLE || "Verified").replace('ROLE_', '');
 
-        if (ROLE === 'ROLE_ADMIN' || ROLE === 'ADMIN') {
-            document.getElementById('admin-tools').classList.remove('hidden');
-        }
-        if (ROLE === 'ROLE_BUYER' || ROLE === 'BUYER') {
-            document.getElementById('add-prop-btn').classList.add('hidden');
-        }
+        if (ROLE === 'ROLE_ADMIN' || ROLE === 'ADMIN') document.getElementById('admin-tools').classList.remove('hidden');
+        if (ROLE === 'ROLE_BUYER' || ROLE === 'BUYER') document.getElementById('add-prop-btn').classList.add('hidden');
+        if (ROLE === 'ROLE_SELLER' || ROLE === 'SELLER') document.getElementById('wishlist-btn').classList.add('hidden');
 
         fetchOverviewStats();
         fetchProperties();
@@ -227,13 +233,10 @@
         }, 1000);
     });
 
-    async function changeAppStatus(id, newStatus) {
-        const res = await fetch(`http://localhost:8080/api/appoinments/status/${id}?status=${newStatus}`, {
-            method: 'PATCH',
-            headers: { 'Authorization': 'Bearer ' + TOKEN }
-        });
-        if(res.ok) { alert("Status Sync Complete!"); fetchAppoinments(); }
-    }
+    function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); }
+    function logout() { localStorage.clear(); window.location.href = 'http://localhost:8080/login.html'; }
+    function openAppoinment(pid) { document.getElementById('ap-prop-id').value = pid; toggleModal('apModal', true); }
+    function openInquiry(pid) { document.getElementById('inq-prop-id').value = pid; toggleModal('inqModal', true); }
 
     function nav(view) {
         document.querySelectorAll('.content-view').forEach(v => v.classList.add('hidden'));
@@ -246,13 +249,10 @@
         if(view === 'properties') fetchProperties();
         if(view === 'appoinments') fetchAppoinments();
         if(view === 'inquiries') fetchInquiries();
+        if(view === 'wishlist') fetchWishlist();
+        if(view === 'notifications') fetchNotifications();
         if(view === 'overview') fetchOverviewStats();
     }
-
-    function toggleModal(id, show) { document.getElementById(id).classList.toggle('hidden', !show); }
-    function logout() { localStorage.clear(); window.location.href = 'http://localhost:8080/login.html'; }
-    function openAppoinment(pid) { document.getElementById('ap-prop-id').value = pid; toggleModal('apModal', true); }
-    function openInquiry(pid) { document.getElementById('inq-prop-id').value = pid; toggleModal('inqModal', true); }
 
     async function fetchOverviewStats() {
         try {
@@ -260,8 +260,8 @@
             const props = await pRes.json();
             document.getElementById('stat-p').innerText = props.length;
             const aRes = await fetch('http://localhost:8080/api/appoinments/all', { headers: { 'Authorization': 'Bearer ' + TOKEN }});
-            const apps = await aRes.json();
-            document.getElementById('stat-a').innerText = apps.length;
+            const data = await aRes.json();
+            document.getElementById('stat-a').innerText = data.length;
         } catch(e) {}
     }
 
@@ -269,7 +269,8 @@
         const res = await fetch('http://localhost:8080/api/properties/all', { headers: { 'Authorization': 'Bearer ' + TOKEN }});
         const props = await res.json();
         document.getElementById('prop-grid').innerHTML = props.map(p => `
-            <div class="glass-panel p-6 rounded-[2.5rem] space-y-4 hover:border-emerald-500/30 transition-all border border-transparent">
+            <div class="glass-panel p-6 rounded-[2.5rem] space-y-4 hover:border-emerald-500/40 transition-all border border-transparent shadow-xl relative">
+                ${ROLE === 'ROLE_BUYER' || ROLE === 'BUYER' ? `<button onclick="addToWishlist(${p.id})" class="absolute top-8 right-8 w-10 h-10 bg-slate-950/50 backdrop-blur-md rounded-full text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-lg z-10"><i class="fa-solid fa-heart"></i></button>` : ''}
                 <div class="h-44 bg-slate-900 rounded-3xl overflow-hidden flex items-center justify-center border border-slate-800">
                     ${p.imageUrl ? `<img src="${p.imageUrl}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-house-chimney text-slate-800 text-5xl"></i>`}
                 </div>
@@ -283,65 +284,80 @@
         `).join('');
     }
 
-    async function fetchAppoinments() {
-        const res = await fetch('http://localhost:8080/api/appoinments/all', { headers: { 'Authorization': 'Bearer ' + TOKEN }});
-        const data = await res.json();
-        document.getElementById('appoinment-table-body').innerHTML = data.map(a => `
-            <tr class="border-b border-slate-900/50 hover:bg-white/5 transition-colors">
-                <td class="p-5 font-mono text-emerald-500">#A0${a.id}</td>
-                <td class="p-5 text-white">${new Date(a.appoinmentDate).toLocaleString()}</td>
-                <td class="p-5 text-slate-400">Node: ${a.propertyId}</td>
-                <td class="p-5">
-                    <button onclick="changeAppStatus(${a.id}, 'COMPLETED')" class="${a.status === 'PENDING' ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'} px-4 py-1.5 rounded-full text-[9px] font-bold border hover:opacity-80 transition-all">${a.status}</button>
-                </td>
-            </tr>
-        `).join('');
+    async function addToWishlist(pid) {
+        const data = { propertyId: pid, userId: USER_ID };
+        const res = await fetch('http://localhost:8080/api/wishlist/add', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN }, body: JSON.stringify(data) });
+        if(res.ok) alert("Node Synced with Wishlist! ❤️");
     }
 
-    async function fetchInquiries() {
-        const res = await fetch('http://localhost:8080/api/inquiries/all', { headers: { 'Authorization': 'Bearer ' + TOKEN }});
+    async function fetchWishlist() {
+        const res = await fetch(`http://localhost:8080/api/wishlist/user/${USER_ID}`, { headers: { 'Authorization': 'Bearer ' + TOKEN }});
         const data = await res.json();
-        document.getElementById('inquiry-list').innerHTML = data.map(i => `<div class="glass-panel p-6 rounded-[2rem] border-l-4 border-blue-500 mb-4 bg-slate-900/40"><p class="text-[10px] font-bold text-slate-500 uppercase mb-2">Sync Node: ${i.id} | Asset Ref: ${i.propertyId}</p><p class="text-white text-sm italic">"${i.message}"</p></div>`).join('');
+        const grid = document.getElementById('wishlist-grid');
+        if(data.length === 0) grid.innerHTML = `<p class="col-span-full text-center text-slate-500 py-10 italic">Empty Wishlist Node.</p>`;
+        else grid.innerHTML = data.map(w => `<div class="glass-panel p-6 rounded-[2rem] border border-red-500/10 shadow-xl space-y-4 text-center"><h4 class="text-white font-bold text-lg italic uppercase tracking-tighter">${w.propertyTitle || 'Asset Node'}</h4><p class="text-emerald-500 font-black">LKR ${w.propertyPrice ? w.propertyPrice.toLocaleString() : 'N/A'}</p><button onclick="removeWish(${w.id})" class="text-red-500 text-[10px] font-bold uppercase hover:underline">Remove Node</button></div>`).join('');
     }
 
-    async function fetchUsers() {
-        const res = await fetch('http://localhost:8080/api/users/all', { headers: { 'Authorization': 'Bearer ' + TOKEN }});
-        const users = await res.json();
-        document.getElementById('user-table-body').innerHTML = users.map(u => `<tr class="border-b border-slate-900/50 hover:bg-white/5 transition-colors"><td class="p-5 font-mono text-emerald-500">#U0${u.id}</td><td class="p-5 font-bold text-white">${u.username}</td><td class="p-5 text-slate-500">${u.email}</td><td class="p-5"><button onclick="handleDeleteUser(${u.id})" class="text-red-500 text-xs font-bold hover:underline">Revoke</button></td></tr>`).join('');
+    async function removeWish(id) {
+        const res = await fetch(`http://localhost:8080/api/wishlist/remove/${id}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + TOKEN }});
+        if(res.ok) fetchWishlist();
+    }
+
+    async function fetchNotifications() {
+        const res = await fetch(`http://localhost:8080/api/notifications/user/${USER_ID}`, { headers: { 'Authorization': 'Bearer ' + TOKEN }});
+        const data = await res.json();
+        document.getElementById('notification-list').innerHTML = data.map(n => `<div class="glass-panel p-5 rounded-2xl border-l-4 border-amber-500 mb-3 ${n.isRead ? 'opacity-40' : ''}"><p class="text-white text-sm">${n.message}</p></div>`).join('');
     }
 
     async function handleSaveProperty(e) {
         e.preventDefault();
-        const data = { title: document.getElementById('p-title').value, price: document.getElementById('p-price').value, categoryName: document.getElementById('p-cat').value, cityName: document.getElementById('p-loc').value, imageUrl: document.getElementById('p-img').value, docName: document.getElementById('p-doc').value, status: "AVAILABLE", sellerId: 1 };
+        const data = { title: document.getElementById('p-title').value, price: document.getElementById('p-price').value, categoryName: document.getElementById('p-cat').value, cityName: document.getElementById('p-loc').value, imageUrl: document.getElementById('p-img').value, docName: document.getElementById('p-doc').value, status: "AVAILABLE", sellerId: USER_ID };
         const res = await fetch('http://localhost:8080/api/properties/save', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN }, body: JSON.stringify(data) });
         if(res.ok) { alert("Asset Node Published!"); toggleModal('propModal', false); fetchProperties(); fetchOverviewStats(); }
     }
 
     async function handleSaveAppoinment(e) {
         e.preventDefault();
-        const data = { appoinmentDate: document.getElementById('ap-date').value, propertyId: document.getElementById('ap-prop-id').value, status: "PENDING", userId: 1 };
+        const data = { appoinmentDate: document.getElementById('ap-date').value, propertyId: document.getElementById('ap-prop-id').value, status: "PENDING", userId: USER_ID };
         const res = await fetch('http://localhost:8080/api/appoinments/book', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN }, body: JSON.stringify(data) });
         if(res.ok) { alert("Booking Streamed!"); toggleModal('apModal', false); fetchAppoinments(); fetchOverviewStats(); }
     }
 
+    async function changeAppStatus(id, newStatus) {
+        const res = await fetch(`http://localhost:8080/api/appoinments/status/${id}?status=${newStatus}`, { method: 'PATCH', headers: { 'Authorization': 'Bearer ' + TOKEN } });
+        if(res.ok) { alert("Status Sync Complete!"); fetchAppoinments(); }
+    }
+
     async function handleSaveInquiry(e) {
         e.preventDefault();
-        const data = { message: document.getElementById('inq-msg').value, propertyId: document.getElementById('inq-prop-id').value, userId: 1 };
+        const data = { message: document.getElementById('inq-msg').value, propertyId: document.getElementById('inq-prop-id').value, userId: USER_ID };
         const res = await fetch('http://localhost:8080/api/inquiries/send', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN }, body: JSON.stringify(data) });
-        if(res.ok) { alert("Inquiry Streamed!"); toggleModal('inqModal', false); }
+        if(res.ok) { alert("Inquiry Streamed!"); toggleModal('inqModal', false); fetchInquiries(); }
+    }
+
+    async function fetchInquiries() {
+        const res = await fetch('http://localhost:8080/api/inquiries/all', { headers: { 'Authorization': 'Bearer ' + TOKEN }});
+        const data = await res.json();
+        document.getElementById('inquiry-list').innerHTML = data.map(i => `<div class="glass-panel p-6 rounded-[2rem] border-l-4 border-blue-500 mb-4 text-center"><p class="text-[10px] font-bold text-slate-500 uppercase mb-2">Sync: ${i.id} | Asset Ref: ${i.propertyId}</p><p class="text-white text-sm italic">"${i.message}"</p></div>`).join('');
+    }
+
+    async function fetchUsers() {
+        const res = await fetch('http://localhost:8080/api/users/all', { headers: { 'Authorization': 'Bearer ' + TOKEN }});
+        const users = await res.json();
+        document.getElementById('user-table-body').innerHTML = users.map(u => `<tr class="border-b border-slate-900/50 hover:bg-white/5 transition-colors"><td class="p-5 font-mono text-emerald-500">#U0${u.id}</td><td class="p-5 font-bold text-white uppercase italic text-[10px] tracking-widest">${u.username}</td><td class="p-5 text-slate-500">${u.email}</td><td class="p-5"><button onclick="handleDeleteUser(${u.id})" class="text-red-500 text-xs font-bold hover:underline">Revoke</button></td></tr>`).join('');
     }
 
     async function handleUpdateUser(e) {
         e.preventDefault();
         const data = { username: document.getElementById('up-un').value, email: document.getElementById('up-em').value };
-        const res = await fetch(`http://localhost:8080/api/users/update/1`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN }, body: JSON.stringify(data) });
+        const res = await fetch(`http://localhost:8080/api/users/update/${USER_ID}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN }, body: JSON.stringify(data) });
         if(res.ok) alert("Identity Node Synced!");
     }
 
     async function handleDeleteUser(id) {
-        if(confirm("Destroy this account node?")) {
+        if(confirm("Destroy account node?")) {
             const res = await fetch(`http://localhost:8080/api/users/delete/${id}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + TOKEN }});
-            if(res.ok) { alert("Node Destroyed."); if(localStorage.getItem('username') === USER) logout(); else fetchUsers(); }
+            if(res.ok) { if(id == USER_ID) logout(); else fetchUsers(); }
         }
     }
 
@@ -352,7 +368,7 @@
         box.innerHTML += `<div class="flex justify-end"><div class="bg-emerald-600 p-5 rounded-3xl rounded-tr-none text-white max-w-[80%] shadow-xl shadow-emerald-500/10">${input.value}</div></div>`;
         const q = input.value; input.value = '';
         setTimeout(() => {
-            box.innerHTML += `<div class="flex gap-4"><div class="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-robot text-xs"></i></div><div class="bg-slate-900 p-5 rounded-3xl rounded-tl-none border border-slate-800 max-w-[80%] italic">Market intelligence analysis complete for "${q}". Node Stable.</div></div>`;
+            box.innerHTML += `<div class="flex gap-4"><div class="w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white"><i class="fa-solid fa-robot text-xs"></i></div><div class="bg-slate-900 p-5 rounded-3xl rounded-tl-none border border-slate-800 max-w-[80%] italic font-mono text-[10px]">Nexus AI: Analysis for "${q}" synced. Growth: Stable.</div></div>`;
             box.scrollTop = box.scrollHeight;
         }, 1000);
     }
