@@ -289,13 +289,35 @@
         const res = await fetch('http://localhost:8080/api/wishlist/add', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN }, body: JSON.stringify(data) });
         if(res.ok) alert("Node Synced with Wishlist! ❤️");
     }
-
     async function fetchWishlist() {
-        const res = await fetch(`http://localhost:8080/api/wishlist/user/${USER_ID}`, { headers: { 'Authorization': 'Bearer ' + TOKEN }});
+        // Browser එකේ සේව් වෙලා තියෙන ඔබේ ඇත්තම ID එක ගන්නවා
+        const currentUserId = localStorage.getItem('userId');
+
+        const res = await fetch(`http://localhost:8080/api/wishlist/user/${currentUserId}`, {
+            headers: { 'Authorization': 'Bearer ' + TOKEN }
+        });
+
         const data = await res.json();
         const grid = document.getElementById('wishlist-grid');
-        if(data.length === 0) grid.innerHTML = `<p class="col-span-full text-center text-slate-500 py-10 italic">Empty Wishlist Node.</p>`;
-        else grid.innerHTML = data.map(w => `<div class="glass-panel p-6 rounded-[2rem] border border-red-500/10 shadow-xl space-y-4 text-center"><h4 class="text-white font-bold text-lg italic uppercase tracking-tighter">${w.propertyTitle || 'Asset Node'}</h4><p class="text-emerald-500 font-black">LKR ${w.propertyPrice ? w.propertyPrice.toLocaleString() : 'N/A'}</p><button onclick="removeWish(${w.id})" class="text-red-500 text-[10px] font-bold uppercase hover:underline">Remove Node</button></div>`).join('');
+
+        if(data.length === 0) {
+            grid.innerHTML = `<p class="col-span-full text-center text-slate-500 py-10 italic">No assets saved in your wishlist.</p>`;
+        } else {
+            grid.innerHTML = data.map(w => `
+            <div class="glass-panel p-6 rounded-[2rem] border border-red-500/20 shadow-xl space-y-4">
+                <div class="flex justify-between items-center">
+                    <h4 class="text-white font-bold text-lg">${w.propertyTitle || 'Asset Node'}</h4>
+                    <button onclick="removeWish(${w.id})" class="text-red-500 hover:text-red-400">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+                <p class="text-emerald-500 font-black">LKR ${w.propertyPrice ? w.propertyPrice.toLocaleString() : '---'}</p>
+                <div class="pt-4 border-t border-slate-800">
+                    <p class="text-[10px] text-slate-500 uppercase tracking-widest">Asset Sync ID: #P0${w.propertyId}</p>
+                </div>
+            </div>
+        `).join('');
+        }
     }
 
     async function removeWish(id) {

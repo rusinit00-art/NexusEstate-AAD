@@ -46,8 +46,11 @@
             localStorage.setItem('token', data.token);
             localStorage.setItem('username', data.username);
             localStorage.setItem('role', data.role);
+            localStorage.setItem('userId', data.userId);
             window.location.href = 'dashboard.html';
-        } else { alert("Access Denied: Invalid credentials."); }
+        } else { alert("Access Denied: Invalid credentials.");
+        }
+
     }
 </script>
 </body>
