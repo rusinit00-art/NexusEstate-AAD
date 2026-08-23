@@ -13,4 +13,7 @@ public class WishlistDTO {
     private Long id;
     private Long userId;
     private Long propertyId;
+    private String propertyTitle;
+    private Double propertyPrice;
+
 }
