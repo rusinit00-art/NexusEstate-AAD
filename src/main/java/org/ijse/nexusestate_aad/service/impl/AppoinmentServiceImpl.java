@@ -27,8 +27,8 @@ public class AppoinmentServiceImpl implements AppoinmentService {
         appoinment.setAppoinmentDate(dto.getAppoinmentDate());
         appoinment.setStatus(AppoinmentStatus.PENDING);
 
-        appoinment.setProperty(propertyRepository.findById(dto.getPropertyId()).orElse(null));
-        appoinment.setUser(userRepository.findById(dto.getUserId()).orElse(null));
+        appoinment.setProperty(propertyRepository.findById(dto.getPropertyId()).orElseThrow());
+        appoinment.setUser(userRepository.findById(dto.getUserId()).orElseThrow());
 
         appoinmentRepository.save(appoinment);
         return "Appoinment booked successfully!";
@@ -37,9 +37,7 @@ public class AppoinmentServiceImpl implements AppoinmentService {
     @Override
     public List<AppoinmentDTO> getAllAppoinments() {
         return appoinmentRepository.findAll().stream().map(a -> new AppoinmentDTO(
-                a.getId(),
-                a.getAppoinmentDate(),
-                a.getStatus(),
+                a.getId(), a.getAppoinmentDate(), a.getStatus(),
                 a.getProperty() != null ? a.getProperty().getId() : null,
                 a.getUser() != null ? a.getUser().getId() : null
         )).collect(Collectors.toList());

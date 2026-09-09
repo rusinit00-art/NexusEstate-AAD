@@ -5,7 +5,6 @@ import org.ijse.nexusestate_aad.dto.AppoinmentDTO;
 import org.ijse.nexusestate_aad.service.AppoinmentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
