@@ -8,6 +8,7 @@ import org.ijse.nexusestate_aad.repository.AppoinmentRepository;
 import org.ijse.nexusestate_aad.repository.PropertyRepository;
 import org.ijse.nexusestate_aad.repository.UserRepository;
 import org.ijse.nexusestate_aad.service.AppoinmentService;
+import org.ijse.nexusestate_aad.service.NotificationService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +21,19 @@ public class AppoinmentServiceImpl implements AppoinmentService {
     private final AppoinmentRepository appoinmentRepository;
     private final PropertyRepository propertyRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
+
+
+    private void notifyAllAdmins(String message) {
+        try {
+            userRepository.findAll().stream()
+                    .filter(u -> {String userInfo = u.toString().toUpperCase();
+                        return userInfo.contains("ADMIN") ||
+                                (u.getUsername() != null && u.getUsername().equalsIgnoreCase("Rusini"));
+                    })
+                    .forEach(admin -> notificationService.createNotification(admin.getId(), "[ADMIN ALERT] " + message));
+        } catch (Exception ignored) {}
+    }
 
     @Override
     public String saveAppoinment(AppoinmentDTO dto) {
@@ -27,10 +41,29 @@ public class AppoinmentServiceImpl implements AppoinmentService {
         appoinment.setAppoinmentDate(dto.getAppoinmentDate());
         appoinment.setStatus(AppoinmentStatus.PENDING);
 
-        appoinment.setProperty(propertyRepository.findById(dto.getPropertyId()).orElseThrow());
-        appoinment.setUser(userRepository.findById(dto.getUserId()).orElseThrow());
+        var property = propertyRepository.findById(dto.getPropertyId()).orElseThrow();
+        var buyer = userRepository.findById(dto.getUserId()).orElseThrow();
+
+        appoinment.setProperty(property);
+        appoinment.setUser(buyer);
 
         appoinmentRepository.save(appoinment);
+
+        // 🔔 1. Seller ට Notification යැවීම
+        try {
+            if (property.getSeller() != null) {
+                Long sellerId = property.getSeller().getId();
+                notificationService.createNotification(
+                        sellerId,
+                        "New viewing booked by " + buyer.getUsername() + " for Asset #" + property.getId() + " on " + dto.getAppoinmentDate()
+                );
+            }
+        } catch (Exception ignored) {}
+
+        try {
+            notifyAllAdmins("New viewing booked by " + buyer.getUsername() + " for Asset #" + property.getId());
+        } catch (Exception ignored) {}
+
         return "Appoinment booked successfully!";
     }
 
@@ -49,6 +82,17 @@ public class AppoinmentServiceImpl implements AppoinmentService {
                 .orElseThrow(() -> new RuntimeException("Appoinment not found"));
         a.setStatus(AppoinmentStatus.valueOf(status.toUpperCase()));
         appoinmentRepository.save(a);
+
+        // 🔔 3. Status වෙනස් වූ විට Buyer ට Notification යැවීම
+        try {
+            if (a.getUser() != null) {
+                notificationService.createNotification(
+                        a.getUser().getId(),
+                        "Your viewing #N0" + a.getId() + " status was updated to: " + status.toUpperCase()
+                );
+            }
+        } catch (Exception ignored) {}
+
         return "Status updated to " + status;
     }
 }

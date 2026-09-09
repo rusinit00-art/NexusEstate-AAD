@@ -112,8 +112,14 @@
                 <h3 class="text-2xl font-bold text-white italic text-center">Scheduled Viewings</h3>
                 <div class="glass-panel rounded-3xl overflow-hidden shadow-2xl">
                     <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-900/50 border-b border-slate-800 text-emerald-500 uppercase text-[10px] font-bold">
-                        <tr><th class="p-5">Node ID</th><th class="p-5">Time Sync</th><th class="p-5">Asset</th><th class="p-5">Status</th></tr>
+                        <thead class="bg-slate-900/50 border-b border-slate-800 text-emerald-500 uppercase text-[10px] font-bold tracking-wider">
+                        <tr>
+                            <th class="p-5">Node ID</th>
+                            <th class="p-5">Time Sync</th>
+                            <th class="p-5">Property (Asset)</th>
+                            <th class="p-5">Client (Buyer)</th>
+                            <th class="p-5 text-center">Status / Action</th>
+                        </tr>
                         </thead>
                         <tbody id="appoinment-table-body"></tbody>
                     </table>
@@ -242,9 +248,14 @@
         document.querySelectorAll('.content-view').forEach(v => v.classList.add('hidden'));
         const target = document.getElementById(view + '-section');
         if(target) target.classList.remove('hidden');
+
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('sidebar-active'));
-        event.currentTarget.classList.add('sidebar-active');
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('sidebar-active');
+        }
+
         document.getElementById('view-title').innerText = view.replace('-', ' ');
+
         if(view === 'users') fetchUsers();
         if(view === 'properties') fetchProperties();
         if(view === 'appoinments') fetchAppoinments();
@@ -253,7 +264,6 @@
         if(view === 'notifications') fetchNotifications();
         if(view === 'overview') fetchOverviewStats();
     }
-
     async function fetchOverviewStats() {
         try {
             const pRes = await fetch('http://localhost:8080/api/properties/all', { headers: { 'Authorization': 'Bearer ' + TOKEN }});
@@ -266,24 +276,48 @@
     }
 
     async function fetchProperties() {
-        const res = await fetch('http://localhost:8080/api/properties/all', { headers: { 'Authorization': 'Bearer ' + TOKEN }});
+        const res = await fetch('http://localhost:8080/api/properties/all', {
+            headers: { 'Authorization': 'Bearer ' + TOKEN }
+        });
         const props = await res.json();
-        document.getElementById('prop-grid').innerHTML = props.map(p => `
+
+        document.getElementById('prop-grid').innerHTML = props.map(p => {
+            // Seller ID එක හොයා ගැනීම
+            const sellerId = p.sellerId || (p.seller ? p.seller.id : 'None');
+
+            return `
             <div class="glass-panel p-6 rounded-[2.5rem] space-y-4 hover:border-emerald-500/40 transition-all border border-transparent shadow-xl relative">
-                ${ROLE === 'ROLE_BUYER' || ROLE === 'BUYER' ? `<button onclick="addToWishlist(${p.id})" class="absolute top-8 right-8 w-10 h-10 bg-slate-950/50 backdrop-blur-md rounded-full text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-lg z-10"><i class="fa-solid fa-heart"></i></button>` : ''}
+                ${(ROLE === 'ROLE_BUYER' || ROLE === 'BUYER') ? `
+                    <button onclick="addToWishlist(${p.id})" class="absolute top-8 right-8 w-10 h-10 bg-slate-950/50 backdrop-blur-md rounded-full text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-lg z-10">
+                        <i class="fa-solid fa-heart"></i>
+                    </button>
+                ` : ''}
+
                 <div class="h-44 bg-slate-900 rounded-3xl overflow-hidden flex items-center justify-center border border-slate-800">
                     ${p.imageUrl ? `<img src="${p.imageUrl}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-house-chimney text-slate-800 text-5xl"></i>`}
                 </div>
-                <div><h4 class="font-bold text-white text-lg truncate">${p.title}</h4><p class="text-slate-600 text-[10px] font-bold uppercase tracking-widest">${p.cityName || 'Asset node'}</p></div>
-                <p class="text-emerald-500 font-black text-xl">LKR ${p.price.toLocaleString()}</p>
+
+                <div>
+                    <h4 class="font-bold text-white text-lg truncate">${p.title}</h4>
+                    <div class="flex justify-between items-center mt-1">
+                        <p class="text-slate-600 text-[10px] font-bold uppercase tracking-widest">${p.cityName || 'Asset node'}</p>
+                        <!-- 🔔 මෙන්න මෙතන Seller ID එක පෙන්වයි -->
+                        <span class="text-[9px] bg-slate-900 border border-slate-800 text-emerald-400 px-2 py-0.5 rounded-md font-mono">
+                            Seller: #U0${sellerId}
+                        </span>
+                    </div>
+                </div>
+
+                <p class="text-emerald-500 font-black text-xl">LKR ${p.price ? p.price.toLocaleString() : '0'}</p>
+
                 <div class="flex gap-2 pt-2">
                     <button onclick="openInquiry(${p.id})" class="flex-1 bg-slate-900 hover:text-emerald-500 py-3 rounded-2xl text-[9px] font-bold uppercase border border-slate-800 transition-all">Inquire</button>
                     <button onclick="openAppoinment(${p.id})" class="flex-1 bg-emerald-600 hover:bg-emerald-500 py-3 rounded-2xl text-[9px] font-bold uppercase text-white shadow-lg active:scale-95">Book Now</button>
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
     }
-
     async function addToWishlist(pid) {
          const data = { propertyId: pid, userId: USER_ID };
         const res = await fetch('http://localhost:8080/api/wishlist/add', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN }, body: JSON.stringify(data) });
@@ -322,11 +356,48 @@
         const res = await fetch(`http://localhost:8080/api/wishlist/remove/${id}`, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + TOKEN }});
         if(res.ok) fetchWishlist();
     }
-
     async function fetchNotifications() {
-        const res = await fetch(`http://localhost:8080/api/notifications/user/${USER_ID}`, { headers: { 'Authorization': 'Bearer ' + TOKEN }});
-        const data = await res.json();
-        document.getElementById('notification-list').innerHTML = data.map(n => `<div class="glass-panel p-5 rounded-2xl border-l-4 border-amber-500 mb-3 ${n.isRead ? 'opacity-40' : ''}"><p class="text-white text-sm">${n.message}</p></div>`).join('');
+        try {
+            const res = await fetch(`http://localhost:8080/api/notifications/user/${USER_ID}`, {
+                headers: { 'Authorization': 'Bearer ' + TOKEN }
+            });
+            const data = await res.json();
+            const list = document.getElementById('notification-list');
+
+            if (!data || data.length === 0) {
+                list.innerHTML = `<p class="text-center text-slate-500 py-10 italic">No system alerts available.</p>`;
+                return;
+            }
+
+            list.innerHTML = data.reverse().map(n => `
+                <div onclick="markNotificationRead(${n.id})"
+                     class="glass-panel p-5 rounded-2xl border-l-4 ${n.isRead ? 'border-slate-700 opacity-40' : 'border-amber-500 bg-amber-500/5 cursor-pointer hover:bg-slate-900'} mb-3 transition-all">
+                    <div class="flex items-center justify-between">
+                        <p class="text-white text-sm font-medium">${n.message}</p>
+                        ${!n.isRead ? `<span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>` : ''}
+                    </div>
+                    <span class="text-[9px] text-slate-500 font-mono mt-2 block">
+                        ${n.isRead ? 'Read' : 'Click to mark as read'}
+                    </span>
+                </div>
+            `).join('');
+        } catch (err) {
+            console.error("Error loading notifications:", err);
+        }
+    }
+
+    async function markNotificationRead(id) {
+        try {
+            const res = await fetch(`http://localhost:8080/api/notifications/read/${id}`, {
+                method: 'PUT',
+                headers: { 'Authorization': 'Bearer ' + TOKEN }
+            });
+            if (res.ok) {
+                fetchNotifications();
+            }
+        } catch (e) {
+            console.error("Error marking as read", e);
+        }
     }
 
     async function handleSaveProperty(e) {
@@ -344,10 +415,28 @@
     }
 
     async function changeAppStatus(id, newStatus) {
-        const res = await fetch(`http://localhost:8080/api/appoinments/status/${id}?status=${newStatus}`, { method: 'PATCH', headers: { 'Authorization': 'Bearer ' + TOKEN } });
-        if(res.ok) { alert("Status Sync Complete!"); fetchAppoinments(); }
-    }
+        try {
+            // Backend එකේ @PutMapping("/status/{id}/{status}") එකට හරියන URL එක:
+            const res = await fetch(`http://localhost:8080/api/appoinments/status/${id}/${newStatus}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Bearer ' + TOKEN
+                }
+            });
 
+            if (res.ok) {
+                const msg = await res.text();
+                alert(`Appointment #${id} status updated to ${newStatus}! ✅`);
+                fetchAppoinments(); // Table එක refresh කර අලුත් status එක පෙන්වයි
+            } else {
+                const errorText = await res.text();
+                alert(`Status update failed: ${errorText || res.statusText}`);
+            }
+        } catch (e) {
+            console.error("Status update error:", e);
+            alert("Network error: Can't Status update .");
+        }
+    }
     async function handleSaveInquiry(e) {
         e.preventDefault();
         const data = { message: document.getElementById('inq-msg').value, propertyId: document.getElementById('inq-prop-id').value, userId: USER_ID };
@@ -375,7 +464,6 @@
                             <i class="fa-solid fa-user text-[10px]"></i>
                         </div>
                         <div>
-                            <!-- මෙන්න මෙතැනින් තමයි පණිවිඩය එවපු කෙනාගේ නම පෙන්වන්නේ -->
                             <p class="text-white font-bold text-xs uppercase tracking-tighter">${i.askerName || 'Unknown Node'}</p>
                             <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Asset Sync: #0${i.propertyId}</p>
                         </div>
@@ -386,13 +474,11 @@
                 <p class="text-slate-200 text-sm italic pl-11 leading-relaxed">"${i.message}"</p>
 
                 ${i.reply ? `
-                    <!-- පිළිතුර පෙන්වන කොටස -->
                     <div class="mt-6 ml-11 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
                         <p class="text-[9px] font-bold text-emerald-500 uppercase mb-1 italic">Nexus Official Response:</p>
                         <p class="text-white text-sm font-medium">"${i.reply}"</p>
                     </div>
                 ` : `
-                    <!-- Admin/Seller නම් පමණක් පෙන්වන Reply කොටස -->
                     ${!ROLE.includes('BUYER') ? `
                         <div class="mt-6 ml-11 flex gap-2">
                             <input type="text" id="rep-in-${i.id}" placeholder="Provide sync response..."
@@ -485,28 +571,116 @@
             box.scrollTop = box.scrollHeight;
         }, 1000);
     }
-    async function sendReply(inquiryId) {
-        const replyInput = document.getElementById(`reply-in-${inquiryId}`);
+    // --- Inquiry Reply Function ---
+    async function sendReply(id) {
+        const replyInput = document.getElementById(`rep-in-${id}`);
+        if (!replyInput) return;
         const replyText = replyInput.value;
 
         if (!replyText) {
-            alert("Please enter a response first.");
+            alert("Please enter a response message.");
             return;
         }
 
+        try {
+            const res = await fetch(`http://localhost:8080/api/inquiries/reply/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'text/plain',
+                    'Authorization': 'Bearer ' + TOKEN
+                },
+                body: replyText
+            });
 
-        const res = await fetch(`http://localhost:8080/api/inquiries/reply/${inquiryId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'text/plain',
-                'Authorization': 'Bearer ' + TOKEN
-            },
-            body: replyText
-        });
+            if (res.ok) {
+                alert("Official Response Synced!");
+                fetchInquiries();
+            } else {
+                alert("Error: Sync Failed.");
+            }
+        } catch (err) {
+            console.error("Reply Sync Error:", err);
+        }
+    }
 
-        if (res.ok) {
-            alert("Response Sent to Buyer! ✅");
-            fetchInquiries();
+    async function fetchAppoinments() {
+        try {
+            let propMap = {};
+            try {
+                const pRes = await fetch('http://localhost:8080/api/properties/all', {
+                    headers: { 'Authorization': 'Bearer ' + TOKEN }
+                });
+                const props = await pRes.json();
+                props.forEach(p => { propMap[p.id] = p.title; });
+            } catch (e) {
+                console.warn("Could not load property titles", e);
+            }
+
+            const res = await fetch('http://localhost:8080/api/appoinments/all', {
+                headers: { 'Authorization': 'Bearer ' + TOKEN }
+            });
+
+            if (!res.ok) throw new Error("Status: " + res.status);
+            let data = await res.json();
+
+            const currentRole = (ROLE || '').toUpperCase();
+            const isBuyer = currentRole.includes('BUYER');
+            const canEditStatus = currentRole.includes('ADMIN') || currentRole.includes('SELLER');
+
+            if (isBuyer) {
+                data = data.filter(a => a.userId == USER_ID);
+            }
+
+            const tbody = document.getElementById('appoinment-table-body');
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 italic">No scheduled viewings found.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.map(a => {
+                const dateStr = a.appoinmentDate ? new Date(a.appoinmentDate).toLocaleString() : 'Date Pending';
+                const propertyTitle = a.propertyTitle || propMap[a.propertyId] || `Asset Node #${a.propertyId}`;
+                const buyerLabel = a.userName ? a.userName : (a.userId ? `User #U0${a.userId}` : 'Unknown');
+
+                let statusBadge = 'bg-amber-500/10 text-amber-500 border-amber-500/30';
+                if (a.status === 'CONFIRMED' || a.status === 'COMPLETED') {
+                    statusBadge = 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30';
+                } else if (a.status === 'CANCELLED' || a.status === 'REJECTED') {
+                    statusBadge = 'bg-red-500/10 text-red-500 border-red-500/30';
+                }
+
+                return `
+                    <tr class="border-b border-slate-900/50 hover:bg-white/5 transition-colors">
+                        <td class="p-5 font-mono text-emerald-500 font-bold">#N0${a.id}</td>
+                        <td class="p-5 text-white font-medium">${dateStr}</td>
+                        <td class="p-5 text-slate-300 font-semibold">
+                            ${propertyTitle}
+                            <span class="block text-[10px] text-slate-500 font-mono">ID: #${a.propertyId}</span>
+                        </td>
+                        <td class="p-5 text-slate-400 font-mono text-xs">${buyerLabel}</td>
+                        <td class="p-5 text-center">
+                            ${canEditStatus ? `
+                                <select onchange="changeAppStatus(${a.id}, this.value)"
+                                        class="bg-slate-900 text-xs font-bold ${statusBadge} border px-3 py-1.5 rounded-xl outline-none cursor-pointer hover:bg-slate-800 transition-all">
+                                    <option value="PENDING" ${a.status === 'PENDING' ? 'selected' : ''}>PENDING</option>
+                                    <option value="CONFIRMED" ${a.status === 'CONFIRMED' ? 'selected' : ''}>CONFIRMED</option>
+                                    <option value="COMPLETED" ${a.status === 'COMPLETED' ? 'selected' : ''}>COMPLETED</option>
+                                    <option value="CANCELLED" ${a.status === 'CANCELLED' ? 'selected' : ''}>CANCELLED</option>
+                                </select>
+                            ` : `
+                                <span class="${statusBadge} px-4 py-1.5 rounded-full text-[10px] font-bold border uppercase tracking-wider inline-block">
+                                    ${a.status}
+                                </span>
+                            `}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+        } catch (err) {
+            console.error("Error fetching appointments:", err);
+            document.getElementById('appoinment-table-body').innerHTML =
+                `<tr><td colspan="5" class="p-5 text-center text-red-500 italic">Error loading appointments: ${err.message}</td></tr>`;
         }
     }
 </script>
