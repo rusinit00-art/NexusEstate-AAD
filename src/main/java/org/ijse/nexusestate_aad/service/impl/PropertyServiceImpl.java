@@ -65,12 +65,10 @@ public class PropertyServiceImpl implements PropertyService {
         entity.setAreaSqft(dto.getAreaSqft());
         entity.setStatus(dto.getStatus());
 
-        // Category සොයා ගැනීම හෝ අලුතින් සෑදීම
         PropertyCategory category = categoryRepository.findByName(dto.getCategoryName())
                 .orElseGet(() -> categoryRepository.save(new PropertyCategory(null, dto.getCategoryName())));
         entity.setCategory(category);
 
-        // Location සොයා ගැනීම හෝ අලුතින් සෑදීම
         Location location = locationRepository.findByCity(dto.getCityName())
                 .orElseGet(() -> locationRepository.save(new Location(null, dto.getCityName(), "Default District")));
         entity.setLocation(location);
