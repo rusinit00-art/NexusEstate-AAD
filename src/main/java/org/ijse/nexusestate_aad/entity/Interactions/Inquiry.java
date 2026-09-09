@@ -18,6 +18,7 @@ public class Inquiry {
     private String message;
 
     private LocalDateTime date = LocalDateTime.now();
+    private String reply;
 
     @ManyToOne
     private User user;

@@ -24,4 +24,11 @@ public class InquiryController {
     public ResponseEntity<List<InquiryDTO>> getAllInquiries() {
         return ResponseEntity.ok(inquiryService.getAllInquiries());
     }
+
+    @PutMapping("/reply/{id}")
+    public ResponseEntity<String> replyInquiry(@PathVariable Long id, @RequestBody String replyMessage) {
+        String cleanReply = replyMessage.replace("\"", "");
+        inquiryService.updateReply(id, cleanReply);
+        return ResponseEntity.ok("Official Response Synced!");
+    }
 }

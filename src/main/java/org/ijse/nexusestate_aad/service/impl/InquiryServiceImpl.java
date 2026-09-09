@@ -26,12 +26,18 @@ public class InquiryServiceImpl implements InquiryService {
         Inquiry inquiry = new Inquiry();
         inquiry.setMessage(dto.getMessage());
         inquiry.setDate(LocalDateTime.now());
-
         inquiry.setProperty(propertyRepository.findById(dto.getPropertyId()).orElse(null));
         inquiry.setUser(userRepository.findById(dto.getUserId()).orElse(null));
-
         inquiryRepository.save(inquiry);
         return "Inquiry sent successfully!";
+    }
+
+    @Override
+    public void updateReply(Long id, String reply) {
+        Inquiry inquiry = inquiryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Inquiry not found"));
+        inquiry.setReply(reply);
+        inquiryRepository.save(inquiry);
     }
 
     @Override
@@ -41,7 +47,9 @@ public class InquiryServiceImpl implements InquiryService {
                 i.getMessage(),
                 i.getDate(),
                 i.getProperty() != null ? i.getProperty().getId() : null,
-                i.getUser() != null ? i.getUser().getId() : null
+                i.getUser() != null ? i.getUser().getId() : null,
+                i.getReply(),
+                i.getUser() != null ? i.getUser().getUsername() : "Unknown Node"
         )).collect(Collectors.toList());
     }
 }

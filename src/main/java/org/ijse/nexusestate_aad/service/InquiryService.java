@@ -6,4 +6,5 @@ import java.util.List;
 public interface InquiryService {
     String saveInquiry(InquiryDTO dto);
     List<InquiryDTO> getAllInquiries();
+    void updateReply(Long id, String reply);
 }
