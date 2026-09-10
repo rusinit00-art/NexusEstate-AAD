@@ -48,7 +48,7 @@ public class InquiryServiceImpl implements InquiryService {
         inquiry.setUser(user);
         inquiryRepository.save(inquiry);
 
-        // 🔔 1. Seller ට Notification යැවීම
+        //  Seller -Notification
         try {
             if (property != null && property.getSeller() != null) {
                 String senderName = (user != null) ? user.getUsername() : "A Buyer";
@@ -59,7 +59,7 @@ public class InquiryServiceImpl implements InquiryService {
             }
         } catch (Exception ignored) {}
 
-        // 🔔 2. Admin ට Notification යැවීම
+        // Admin -Notification
         try {
             String senderName = (user != null) ? user.getUsername() : "A Buyer";
             notifyAllAdmins("New Inquiry received from " + senderName + " for Asset #" + dto.getPropertyId());
@@ -75,7 +75,7 @@ public class InquiryServiceImpl implements InquiryService {
         inquiry.setReply(reply);
         inquiryRepository.save(inquiry);
 
-        // 🔔 3. Buyer ට Notification යැවීම
+        //  Buyer -Notification
         try {
             if (inquiry.getUser() != null) {
                 notificationService.createNotification(
@@ -85,7 +85,7 @@ public class InquiryServiceImpl implements InquiryService {
             }
         } catch (Exception ignored) {}
 
-        // 🔔 4. Admin ට Notification යැවීම
+        //  Admin - Notification
         try {
             notifyAllAdmins("Inquiry #" + id + " was replied: \"" + reply + "\"");
         } catch (Exception ignored) {}

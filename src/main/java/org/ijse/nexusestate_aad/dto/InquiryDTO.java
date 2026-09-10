@@ -15,5 +15,5 @@ public class InquiryDTO {
     private Long propertyId;
     private Long userId;
     private String reply;
-    private String askerName; // ප්‍රශ්නය ඇසූ Buyer ගේ නම
+    private String askerName;
 }
