@@ -49,7 +49,6 @@ public class AppoinmentServiceImpl implements AppoinmentService {
 
         appoinmentRepository.save(appoinment);
 
-        // 🔔 1. Seller ට Notification යැවීම
         try {
             if (property.getSeller() != null) {
                 Long sellerId = property.getSeller().getId();
@@ -83,7 +82,6 @@ public class AppoinmentServiceImpl implements AppoinmentService {
         a.setStatus(AppoinmentStatus.valueOf(status.toUpperCase()));
         appoinmentRepository.save(a);
 
-        // 🔔 3. Status වෙනස් වූ විට Buyer ට Notification යැවීම
         try {
             if (a.getUser() != null) {
                 notificationService.createNotification(
