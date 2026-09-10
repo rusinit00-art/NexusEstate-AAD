@@ -10,8 +10,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class TransactionDTO {
     private Long id;
-    private Double finalPrice;
-    private LocalDateTime saleDate;
     private Long propertyId;
     private Long buyerId;
+    private Long sellerId;
+    private Double amount;
+    private String paymentMethod;
+    private LocalDateTime transactionDate;
 }
