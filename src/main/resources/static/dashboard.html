@@ -7,14 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Unique Oceanic Cyan & Slate Luxury Palette */
         .bg-nexus {
             background: radial-gradient(circle at 10% 20%, #0f1e2e 0%, #0a131f 90%);
         }
         .glass-panel {
             background: rgba(16, 29, 45, 0.75);
             backdrop-filter: blur(16px);
-            border: 1px solid rgba(56, 189, 248, 0.15); /* Soft Cyan Frost Border */
+            border: 1px solid rgba(56, 189, 248, 0.15);
             box-shadow: 0 12px 30px -10px rgba(2, 12, 27, 0.6);
         }
         .glass-panel:hover {
@@ -34,7 +33,6 @@
 <body class="bg-nexus text-slate-200 font-sans overflow-hidden">
 
 <div class="flex h-screen overflow-hidden">
-    <!-- Sidebar -->
     <aside class="w-80 bg-[#0c1826]/90 border-r border-slate-800/80 flex flex-col hidden lg:flex backdrop-blur-xl">
         <div class="p-8 border-b border-slate-800/80 flex items-center gap-4">
             <div class="w-12 h-12 bg-gradient-to-tr from-emerald-600 to-cyan-500 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-cyan-500/20">
@@ -90,7 +88,6 @@
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
-        <!-- Top Header -->
         <header class="h-24 px-10 flex items-center justify-between border-b border-slate-800/80 bg-[#0c1826]/60 backdrop-blur-xl">
             <div>
                 <h2 id="view-title" class="text-2xl font-black text-white tracking-tight uppercase italic">Overview</h2>
@@ -111,12 +108,9 @@
             </div>
         </header>
 
-        <!-- Main Viewport -->
         <div id="main-viewport" class="flex-1 overflow-y-auto p-10 space-y-10">
 
-            <!-- Market Overview Section -->
             <div id="overview-section" class="content-view space-y-8">
-                <!-- Welcome Banner -->
                 <div class="glass-panel p-8 rounded-[2.5rem] border border-cyan-500/30 bg-gradient-to-r from-teal-950/40 via-slate-900/60 to-cyan-950/40 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden shadow-2xl">
                     <div class="space-y-2 z-10">
                         <span class="text-[10px] font-bold tracking-[0.25em] uppercase bg-cyan-500/20 text-cyan-300 px-3.5 py-1 rounded-full border border-cyan-500/30">Enterprise Terminal</span>
@@ -134,7 +128,6 @@
                     <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
                 </div>
 
-                <!-- 4 Statistics Metrics Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="glass-panel p-6 rounded-[2rem] hover:border-emerald-400/40 transition-all relative overflow-hidden group">
                         <div class="flex justify-between items-start">
@@ -197,7 +190,6 @@
                     </div>
                 </div>
 
-                <!-- Bottom 2 Columns -->
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="lg:col-span-2 glass-panel p-8 rounded-[2.5rem] space-y-6">
                         <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
@@ -257,7 +249,6 @@
                 </div>
             </div>
 
-            <!-- Properties Section -->
             <div id="properties-section" class="content-view hidden space-y-8">
                 <div class="flex justify-between items-center">
                     <h3 class="text-2xl font-bold text-white italic">Marketplace Intelligence</h3>
@@ -268,13 +259,11 @@
                 <div id="prop-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
 
-            <!-- Wishlist Section -->
             <div id="wishlist-section" class="content-view hidden space-y-8">
                 <h3 class="text-2xl font-bold text-white italic">Saved Asset Nodes</h3>
                 <div id="wishlist-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
 
-            <!-- Appointments Section -->
             <div id="appoinments-section" class="content-view hidden space-y-8 text-center">
                 <h3 class="text-2xl font-bold text-white italic text-center">Scheduled Viewings</h3>
                 <div class="glass-panel rounded-3xl overflow-hidden shadow-2xl">
@@ -293,19 +282,16 @@
                 </div>
             </div>
 
-            <!-- Inquiries Section -->
             <div id="inquiries-section" class="content-view hidden space-y-8">
                 <h3 class="text-2xl font-bold text-white italic text-center">Message Stream</h3>
                 <div id="inquiry-list" class="max-w-3xl mx-auto space-y-4"></div>
             </div>
 
-            <!-- Notifications Section -->
             <div id="notifications-section" class="content-view hidden space-y-8">
                 <h3 class="text-2xl font-bold text-white italic text-center">System Alerts</h3>
                 <div id="notification-list" class="max-w-2xl mx-auto space-y-4"></div>
             </div>
 
-            <!-- Users Section -->
             <div id="users-section" class="content-view hidden space-y-8 text-center">
                 <h3 class="text-2xl font-bold text-white italic text-center uppercase tracking-widest text-sm">Network Identity Nodes</h3>
                 <div class="glass-panel rounded-3xl overflow-hidden shadow-2xl">
@@ -318,7 +304,6 @@
                 </div>
             </div>
 
-            <!-- Profile Settings Section -->
             <div id="profile-section" class="content-view hidden max-w-2xl mx-auto space-y-8">
                 <div class="glass-panel p-10 rounded-[3rem] border-cyan-500/20 shadow-2xl">
                     <h3 class="text-2xl font-bold text-white italic border-b border-slate-800 pb-5 mb-8 text-center uppercase tracking-tighter">Identity Control</h3>
@@ -337,7 +322,6 @@
                 </div>
             </div>
 
-            <!-- AI Chat Section -->
             <div id="ai-chat-section" class="content-view hidden max-w-4xl mx-auto space-y-4">
                 <div class="glass-panel rounded-[2.5rem] border border-cyan-500/25 shadow-2xl overflow-hidden">
                     <div class="p-6 border-b border-slate-800 bg-[#0c1826]/70 flex items-center justify-between">
@@ -370,11 +354,10 @@
                 </div>
             </div>
 
-        </div> <!-- main-viewport end -->
+        </div>
     </main>
-</div> <!-- outer container end -->
+</div>
 
-<!-- Modals -->
 <div id="propModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
     <div class="glass-panel w-full max-w-3xl rounded-[3rem] p-12 overflow-y-auto max-h-[90vh]">
         <h3 class="text-3xl font-black text-white mb-10 border-b border-slate-800 pb-6 italic">Publish Asset</h3>
@@ -510,12 +493,10 @@
         }
     }
 
-    // 🌟 Auto Real Estate Image Fallback Helper
     function getValidImageUrl(url, id) {
         if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
             return url;
         }
-        // If image URL is missing or local name, load premium Unsplash villa/house by ID
         const sampleImages = [
             "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&auto=format&fit=crop&q=80",
             "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&auto=format&fit=crop&q=80",
