@@ -1,7 +1,9 @@
 package org.ijse.nexusestate_aad.entity.CustomerExperienceandAI;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.ijse.nexusestate_aad.entity.SecurityandUsers.User;
 import java.time.LocalDateTime;
 
@@ -14,13 +16,13 @@ public class Chatbot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(columnDefinition = "TEXT")
-    private String userQuery;
+    @Column(length = 1000)
+    private String userPrompt;
 
-    @Column(columnDefinition = "TEXT")
-    private String aiResponse;
+    @Column(length = 2000)
+    private String aiReply;
 
-    private LocalDateTime timestamp = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne
     private User user;
